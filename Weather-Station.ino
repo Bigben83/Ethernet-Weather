@@ -1,10 +1,7 @@
 /****************************************************************
 Arduino Weather Station (Ethernet)
-
 Arduino Ethernet shield on an Arduino Uno: Weather station that sends data to Weather Underground for storage and viewing.
-
 By Dan Fein
-
 Sensors from Adafruit, see their product pages for those libraries.
 
 Notes:
@@ -31,7 +28,7 @@ int DEBUG = 0;      // DEBUG counter; if set to 1, will write values back via se
 #include "Adafruit_SI1145.h"    //UV sensor
 //#include "RTClib.h"           //Real time clock -- If used
 
-//#include <io.h> //for the sleepies -- Needed if using lpdelay (sleeping when using battery)
+#include <io.h> //for the sleepies -- Needed if using lpdelay (sleeping when using battery)
 
 // Pins
 #define DHTPIN          3   // DHT 22  (AM2302)
@@ -42,12 +39,13 @@ int DEBUG = 0;      // DEBUG counter; if set to 1, will write values back via se
 
 // assign a MAC address for the ethernet controller -- Newer boards will have this on a sticker.
 // fill in your address here:
-byte mac[] = { 
-  0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
+byte mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
 // assign an IP address for the controller:
 //IPAddress ip(192,168,1,20);
 //IPAddress gateway(192,168,1,1);	
 //IPAddress subnet(255, 255, 255, 0);
+// fill in your Domain Name Server address here:
+IPAddress myDns(8,8,8,8);
 EthernetClient client;
 unsigned int localPort = 8888;
 
@@ -175,12 +173,10 @@ void loop(void){
     client.print(UVindex);
     //client.print("&action=updateraw");//Standard update
     client.print("&softwaretype=Arduino%20UNO%20version1&action=updateraw&realtime=1&rtfreq=2.5");//Rapid Fire
-    client.print(" HTTP/1.0\r\n");
-  	client.print("Accept: text/html\r\n");
-  	client.print("Host: ");
+    client.print(" HTTP/1.0\nHost: ");
   	client.print(SERVER);
-  	client.print("\r\n\r\n");
-    client.println();
+  	client.println("\nContent-Length: 0\r\n\r\n");
+  	client.println();
     
     if (DEBUG) {   
       Serial.println("Upload complete");
@@ -190,7 +186,9 @@ void loop(void){
       if (DEBUG) { Serial.println(F("Connection failed")); }
       return;
       }
-    
+   
+  client.stop();
+  
     delay(2500); // --If plugged in send every 2.5 seconds  
     //lpDelay(1200); // Low Power Delay. Value of 4=1sec, 40=10sec, 1200=5min --If battery, send every 5 min.
 
