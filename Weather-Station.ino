@@ -49,11 +49,19 @@ IPAddress myDns(8,8,8,8);
 EthernetClient client;
 unsigned int localPort = 8888;
 
-char SERVER[] = "rtupdate.wunderground.com";           // Realtime update server - RapidFire
+//Uncomment the required
+
+// Wunderground Data
+char WSERVER[] = "rtupdate.wunderground.com";           // Realtime update server - RapidFire
 //char SERVER [] = "weatherstation.wunderground.com";  // Standard server
-char WEBPAGE [] = "GET /weatherstation/updateweatherstation.php?";
-char ID [] = "xxxx";
-char PASSWORD [] = "xxxx";
+char WWEBPAGE [] = "GET /weatherstation/updateweatherstation.php?";
+char WID [] = "xxxx";
+char WPASSWORD [] = "xxxx";
+
+// Openweathermap Data
+char OWMSERVER[] = "api.openweathermap.org";
+char OWMWEBPAGE [] = "data/3.0/measurements";
+
 
 // Global Variables
 //RTC_DS1307 rtc;                       // Hardware RTC time -- If used
@@ -135,16 +143,16 @@ void loop(void){
   }//End debug loop
  
  //Send data to Weather Underground
- if (client.connect(SERVER, 80)) { 
+ if (client.connect(WSERVER, 80)) { 
     if (DEBUG) {    
       Serial.println("Sending DATA ");
       }
     // Ship it!
-    client.print(WEBPAGE); 
+    client.print(WWEBPAGE); 
     client.print("ID=");
-    client.print(ID);
+    client.print(WID);
     client.print("&PASSWORD=");
-    client.print(PASSWORD);
+    client.print(WPASSWORD);
     client.print("&dateutc=");
     client.print("now");    //can use instead of RTC if sending in real time
     /*
